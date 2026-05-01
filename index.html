@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRLJacker Mobile Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>QRLJACKER v2.0 - MOBILE RELAY</h1>
+    </header>
+
+    <div class="dashboard">
+        <!-- VICTIM'S VIEW: What the attacker shows on their phone -->
+        <div class="victim-view">
+            <div class="victim-label">Attacker Display</div>
+            <div class="phishing-card">
+                <h2>Secure Auth</h2>
+                <p style="font-size: 0.9rem;">Scan to authorize reward</p>
+                <div class="qr-code">
+                    <div class="scan-overlay"></div>
+                    <img id="qr-img" src="" alt="Dynamic QR Code">
+                </div>
+                <p style="font-size: 0.7rem; color: #64748b;" id="target-url">Generating link...</p>
+            </div>
+        </div>
+
+        <!-- HACKER'S VIEW: Attacker controls -->
+        <div class="hacker-view">
+            <div class="hacker-label">Hacker Console</div>
+            <div class="terminal" id="terminal">
+                <p><span class="timestamp">[SYS]</span> QRLJacker initialized.</p>
+                <p><span class="timestamp">[NET]</span> Waiting for victim scan...</p>
+            </div>
+
+            <div class="access-card" id="access-card">
+                <div class="avatar">👤</div>
+                <div>
+                    <div style="color: #64748b; font-size: 0.7rem;">STATUS</div>
+                    <div id="target-name">LISTENING...</div>
+                    <div class="status-granted" id="status-text">HIJACK SUCCESSFUL</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="hack-btn" id="hack-btn">MANUAL SIMULATE SCAN</button>
+        <p style="font-size: 0.7rem; color: #475569; margin-top: 8px;">Dashboard automatically detects hosting URL.</p>
+    </div>
+
+    <div class="hacked-overlay" id="hacked-overlay">
+        <h1>TARGET HACKED</h1>
+        <p style="color: white; margin-bottom: 2rem;">Session Relay Successful. Tokens Captured.</p>
+        <button onclick="resetSimulation()" style="background: white; color: #ef4444; border: none; padding: 10px 20px; border-radius: 4px;">RESET DASHBOARD</button>
+    </div>
+
+    <script>
+        const qrImg = document.getElementById('qr-img');
+        const targetUrlLabel = document.getElementById('target-url');
+        const hackBtn = document.getElementById('hack-btn');
+        const terminal = document.getElementById('terminal');
+        const accessCard = document.getElementById('access-card');
+        const targetName = document.getElementById('target-name');
+        const statusText = document.getElementById('status-text');
+        const hackedOverlay = document.getElementById('hacked-overlay');
+
+        // Dynamic URL detection for GitHub/Vercel/Local
+        const currentPath = window.location.pathname;
+        const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+        
+        // Force HTTP for local testing to avoid 'Bad request version' errors
+        let victimUrl = window.location.origin + basePath + 'victim.html';
+        if (window.location.hostname === 'localhost' || window.location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+            victimUrl = victimUrl.replace('https://', 'http://');
+        }
+        
+        // Generate QR code pointing to the victim landing page
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(victimUrl)}`;
+        targetUrlLabel.innerText = `Points to: victim.html`;
+
+        function addLog(msg) {
+            const p = document.createElement('p');
+            p.innerHTML = `<span class="timestamp">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            terminal.appendChild(p);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        hackBtn.addEventListener('click', () => {
+            hackBtn.disabled = true;
+            addLog("Relay handshake detected...");
+            
+            setTimeout(() => {
+                addLog("Capturing session tokens...");
+                setTimeout(() => {
+                    addLog("Hijack Complete: victim_session_01");
+                    accessCard.classList.add('granted');
+                    targetName.innerText = "VICTIM_01";
+                    statusText.classList.add('show');
+                    
+                    setTimeout(() => {
+                        hackedOverlay.classList.add('active');
+                    }, 800);
+                }, 1000);
+            }, 1000);
+        });
+
+        function resetSimulation() {
+            hackedOverlay.classList.remove('active');
+            accessCard.classList.remove('granted');
+            targetName.innerText = "LISTENING...";
+            statusText.classList.remove('show');
+            hackBtn.disabled = false;
+            addLog("Terminal reset. Awaiting new relay...");
+        }
+    </script>
+</body>
+</html>

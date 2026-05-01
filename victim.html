@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRLJacking: Security Awareness</title>
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --card-bg: #0f172a;
+            --primary: #3b82f6;
+            --accent: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: -apple-system, system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Initial Loading State */
+        .view-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #1e293b;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Hacked Message */
+        .hacked-msg {
+            display: none;
+            text-align: center;
+        }
+
+        .hacked-msg h1 {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        /* Safety Dashboard */
+        #safety-dashboard {
+            display: none;
+            padding: 2rem 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-section h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-num {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .info-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .info-section h3 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .error-list li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 1rem;
+            color: #fca5a5;
+        }
+
+        .error-list li::before {
+            content: "✕";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .safe-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .safe-list li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 1rem;
+            color: #86efac;
+        }
+
+        .safe-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            margin-top: 2rem;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Step 1: Loading/Verification -->
+    <div id="view-loading" class="view-container">
+        <div class="spinner"></div>
+        <p>Verifying secure session...</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Syncing with dashboard...</p>
+    </div>
+
+    <!-- Step 2: The "Hacked" Warning -->
+    <div id="view-hacked" class="view-container" style="display: none;">
+        <div class="hacked-msg">
+            <h1>⚠️ HACKED</h1>
+            <p style="font-size: 1.2rem;">Session Relay Successful. Access Hijacked.</p>
+            <p style="color: var(--text-muted); margin-bottom: 2.5rem;">
+                SoCSE has successfully mirrored and hacked your authentication token.<br>
+                This happened because you scanned an untrusted QR code.
+            </p>
+            <button onclick="showDashboard()">Learn How to Stay Safe</button>
+        </div>
+    </div>
+
+    <!-- Step 3: Educational Dashboard -->
+    <div id="safety-dashboard">
+        <div class="header-section">
+            <h2>Cyber Awareness Guide</h2>
+            <p style="color: var(--text-muted);">Protecting yourself against QRLJacking and Quishing.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-num">400%</span>
+                <span class="stat-label">Global Rise in QR Scams (2023-25)</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">39,638</span>
+                <span class="stat-label">QR Frauds Reported in India (FY24-26)</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">₹56.3 Cr</span>
+                <span class="stat-label">Losses to QR Fraud in India (FY24-26)</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">1 in 8</span>
+                <span class="stat-label">Phishing Emails Contain QR Codes</span>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>What is QRLJacking?</h3>
+            <p>
+                <strong>Quick Response Login Jacking</strong> is a session hijacking technique. Instead of stealing your
+                password, the attacker "relays" a legitimate login QR code to you. When you scan it, you aren't logging
+                yourself in—you are authorizing the <strong>attacker's device</strong> to access your account.
+            </p>
+        </div>
+
+        <div class="info-section">
+            <h3>Common Mistakes to Avoid</h3>
+            <ul class="error-list">
+                <li>Scanning QR codes from unsolicited emails or SMS messages.</li>
+                <li>Scanning QR stickers in public places (parking, menus) without checking if they were pasted over.
+                </li>
+                <li>Ignoring the "Confirm Login?" prompt on your phone which shows the device location.</li>
+                <li>Assuming that QR codes are inherently more "secure" than passwords.</li>
+            </ul>
+        </div>
+
+        <div class="info-section">
+            <h3>How to Stay Safe</h3>
+            <ul class="safe-list">
+                <li><strong>Check the URL:</strong> Before authorizing, check the link displayed by your scanner.</li>
+                <li><strong>Verify Location:</strong> If the login prompt says "Login from Mumbai" and you are in Delhi,
+                    reject it immediately.</li>
+                <li><strong>Use Official Apps:</strong> Only use official apps for scanning sensitive logins.</li>
+                <li><strong>Enable MFA:</strong> Use hardware keys or Authenticator apps that require an extra tap after
+                    the scan.</li>
+            </ul>
+        </div>
+
+        <button class="back-btn" onclick="location.reload()">Restart Simulation</button>
+    </div>
+
+    <script>
+        // Simulation flow
+        setTimeout(() => {
+            document.getElementById('view-loading').style.display = 'none';
+            document.getElementById('view-hacked').style.display = 'flex';
+            document.querySelector('.hacked-msg').style.display = 'block';
+        }, 4000);
+
+        function showDashboard() {
+            document.getElementById('view-hacked').style.display = 'none';
+            document.getElementById('safety-dashboard').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+
+</html>
