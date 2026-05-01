@@ -3,86 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRLJacker Mobile Dashboard</title>
+    <title>Secure Verification | Universal Auth</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>QRLJACKER v2.0 - MOBILE RELAY</h1>
+        <h1>SecureAuth v4.2</h1>
     </header>
 
-    <div class="dashboard">
-        <!-- VICTIM'S VIEW: What the attacker shows on their phone -->
-        <div class="victim-view">
-            <div class="victim-label">Attacker Display</div>
-            <div class="phishing-card">
-                <h2>Secure Auth</h2>
-                <p style="font-size: 0.9rem;">Scan to authorize reward</p>
-                <div class="qr-code">
-                    <div class="scan-overlay"></div>
-                    <img id="qr-img" src="" alt="Dynamic QR Code">
-                </div>
-                <p style="font-size: 0.7rem; color: #64748b;" id="target-url">Generating link...</p>
+    <main class="main-container">
+        <!-- THE PHISHING PORTAL (What the victim sees) -->
+        <div class="phishing-portal" id="portal">
+            <div class="portal-badge">
+                <span class="pulse-dot"></span> Secure Verification Required
+            </div>
+            <h2>Verify Your Account</h2>
+            <p>To continue accessing premium features and ensure your data remains protected, please authorize this session using your official mobile application.</p>
+            
+            <div class="qr-wrapper">
+                <div class="scan-line"></div>
+                <img id="qr-img" src="" alt="Verification QR Code">
+            </div>
+
+            <div class="portal-footer">
+                <p style="font-size: 0.75rem; color: var(--text-muted);">
+                    Waiting for mobile authorization...<br>
+                    Ref ID: <span id="ref-id">AUTH-7729-QX</span>
+                </p>
             </div>
         </div>
 
-        <!-- HACKER'S VIEW: Attacker controls -->
-        <div class="hacker-view">
-            <div class="hacker-label">Hacker Console</div>
-            <div class="terminal" id="terminal">
-                <p><span class="timestamp">[SYS]</span> QRLJacker initialized.</p>
-                <p><span class="timestamp">[NET]</span> Waiting for victim scan...</p>
+        <!-- HIDDEN HACKER PANEL (For simulation/demonstration) -->
+        <div class="hacker-panel" id="hacker-panel">
+            <div class="hacker-header">
+                <h3>Terminal :: QRLJacker_v2</h3>
+                <span style="font-size: 0.6rem; color: #475569;">BETA-7</span>
             </div>
-
-            <div class="access-card" id="access-card">
-                <div class="avatar">👤</div>
-                <div>
-                    <div style="color: #64748b; font-size: 0.7rem;">STATUS</div>
-                    <div id="target-name">LISTENING...</div>
-                    <div class="status-granted" id="status-text">HIJACK SUCCESSFUL</div>
-                </div>
+            <div class="terminal-mini" id="terminal">
+                <p><span class="ts">[09:21:44]</span> Listener started on port 443...</p>
+                <p><span class="ts">[09:21:45]</span> Waiting for relay handshake...</p>
             </div>
+            <div class="status-row">
+                <div class="status-indicator" id="status-indicator"></div>
+                <div class="status-label" id="status-label">LISTENING FOR VICTIM...</div>
+            </div>
+            <button class="simulate-btn" id="hack-btn" style="width: 100%; margin-top: 1rem; font-size: 0.75rem; padding: 8px;">FORCE SIMULATE SCAN</button>
         </div>
-    </div>
 
-    <div class="controls">
-        <button class="hack-btn" id="hack-btn">MANUAL SIMULATE SCAN</button>
-        <p style="font-size: 0.7rem; color: #475569; margin-top: 8px;">Dashboard automatically detects hosting URL.</p>
-    </div>
+        <!-- TOGGLE BUTTON -->
+        <button class="dashboard-toggle" id="panel-toggle" title="Toggle Hacker Dashboard">
+            ⚙️
+        </button>
+    </main>
 
-    <div class="hacked-overlay" id="hacked-overlay">
-        <h1>TARGET HACKED</h1>
-        <p style="color: white; margin-bottom: 2rem;">Session Relay Successful. Tokens Captured.</p>
-        <button onclick="resetSimulation()" style="background: white; color: #ef4444; border: none; padding: 10px 20px; border-radius: 4px;">RESET DASHBOARD</button>
+    <!-- HACKED OVERLAY -->
+    <div class="hacked-alert" id="hacked-overlay">
+        <h1>TARGET HIJACKED</h1>
+        <p style="color: white; opacity: 0.8; margin-bottom: 2rem; font-size: 1.2rem;">Session Relay Successful. Tokens Captured.</p>
+        <button onclick="resetSimulation()" style="background: white; color: #ef4444; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">RESET SIMULATION</button>
     </div>
 
     <script>
         const qrImg = document.getElementById('qr-img');
-        const targetUrlLabel = document.getElementById('target-url');
         const hackBtn = document.getElementById('hack-btn');
         const terminal = document.getElementById('terminal');
-        const accessCard = document.getElementById('access-card');
-        const targetName = document.getElementById('target-name');
-        const statusText = document.getElementById('status-text');
+        const hackerPanel = document.getElementById('hacker-panel');
+        const panelToggle = document.getElementById('panel-toggle');
+        const statusIndicator = document.getElementById('status-indicator');
+        const statusLabel = document.getElementById('status-label');
         const hackedOverlay = document.getElementById('hacked-overlay');
 
-        // Dynamic URL detection for GitHub/Vercel/Local
+        // Toggle Hacker Panel
+        panelToggle.addEventListener('click', () => {
+            hackerPanel.classList.toggle('visible');
+        });
+
+        // Dynamic URL detection
         const currentPath = window.location.pathname;
         const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-        
-        // Force HTTP for local testing to avoid 'Bad request version' errors
         let victimUrl = window.location.origin + basePath + 'victim.html';
-        if (window.location.hostname === 'localhost' || window.location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+        
+        // Handle file:// protocol or localhost issues
+        const isLocalFile = window.location.protocol === 'file:';
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        if (isLocalFile) {
+            console.warn("Running via file:// - Mobile scanning will not work. Please use a local server.");
+            addLog("WARNING: Local file detected. Mobile scan will fail.");
+        } else if (isLocalhost) {
+            addLog("TIP: Use your local IP (e.g. 192.168.x.x) instead of 'localhost' to scan with a phone.");
+        }
+        
+        // Force HTTP for local network IPs if needed
+        if (window.location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
             victimUrl = victimUrl.replace('https://', 'http://');
         }
         
-        // Generate QR code pointing to the victim landing page
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(victimUrl)}`;
-        targetUrlLabel.innerText = `Points to: victim.html`;
+        // Generate QR code
+        if (!isLocalFile) {
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(victimUrl)}`;
+        } else {
+            // Fallback for file:// to at least show something, even if it won't work on mobile
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent("Please host on a server to scan")}`;
+            qrImg.style.opacity = "0.3";
+            addLog("ERROR: QR generation disabled for local files to prevent unusable data.");
+        }
 
         function addLog(msg) {
             const p = document.createElement('p');
-            p.innerHTML = `<span class="timestamp">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            const now = new Date();
+            const ts = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':' + now.getSeconds().toString().padStart(2, '0');
+            p.innerHTML = `<span class="ts">[${ts}]</span> ${msg}`;
             terminal.appendChild(p);
             terminal.scrollTop = terminal.scrollHeight;
         }
@@ -95,9 +129,9 @@
                 addLog("Capturing session tokens...");
                 setTimeout(() => {
                     addLog("Hijack Complete: victim_session_01");
-                    accessCard.classList.add('granted');
-                    targetName.innerText = "VICTIM_01";
-                    statusText.classList.add('show');
+                    statusIndicator.classList.add('active');
+                    statusLabel.innerText = "ACCESS GRANTED: VICTIM_01";
+                    statusLabel.style.color = "#22c55e";
                     
                     setTimeout(() => {
                         hackedOverlay.classList.add('active');
@@ -108,12 +142,14 @@
 
         function resetSimulation() {
             hackedOverlay.classList.remove('active');
-            accessCard.classList.remove('granted');
-            targetName.innerText = "LISTENING...";
-            statusText.classList.remove('show');
+            statusIndicator.classList.remove('active');
+            statusLabel.innerText = "LISTENING FOR VICTIM...";
+            statusLabel.style.color = "";
             hackBtn.disabled = false;
             addLog("Terminal reset. Awaiting new relay...");
         }
     </script>
+
 </body>
 </html>
+

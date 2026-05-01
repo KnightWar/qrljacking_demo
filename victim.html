@@ -14,12 +14,16 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: #1e293b;
+            --glass: rgba(15, 23, 42, 0.7);
         }
 
         body {
             background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(239, 68, 68, 0.05) 0%, transparent 50%);
             color: var(--text-main);
-            font-family: -apple-system, system-ui, sans-serif;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
             margin: 0;
             padding: 0;
             min-height: 100vh;
@@ -37,116 +41,120 @@
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #1e293b;
-            border-top: 5px solid var(--primary);
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            margin-bottom: 24px;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Hacked Message */
         .hacked-msg {
             display: none;
             text-align: center;
+            max-width: 500px;
         }
 
         .hacked-msg h1 {
-            font-size: 3rem;
+            font-size: 4rem;
+            font-weight: 900;
             color: var(--accent);
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
         }
 
         /* Safety Dashboard */
         #safety-dashboard {
             display: none;
-            padding: 2rem 1.5rem;
-            max-width: 800px;
+            padding: 4rem 1.5rem;
+            max-width: 900px;
             margin: 0 auto;
         }
 
         .header-section {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
         }
 
         .header-section h2 {
             color: var(--primary);
-            font-size: 1.8rem;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        @media (max-width: 600px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+            margin-bottom: 4rem;
         }
 
         .stat-card {
-            background: var(--card-bg);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 12px;
+            padding: 2rem;
+            border-radius: 20px;
             text-align: center;
+            transition: transform 0.3s;
         }
+
+        .stat-card:hover { transform: translateY(-5px); border-color: var(--primary); }
 
         .stat-num {
             display: block;
-            font-size: 2rem;
-            font-weight: bold;
+            font-size: 2.5rem;
+            font-weight: 800;
             color: var(--primary);
             margin-bottom: 0.5rem;
         }
 
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .info-section {
-            background: var(--card-bg);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border);
-            padding: 2rem;
-            border-radius: 16px;
+            padding: 2.5rem;
+            border-radius: 24px;
             margin-bottom: 2rem;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         .info-section h3 {
             color: var(--primary);
+            font-size: 1.5rem;
             margin-top: 0;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
+            font-weight: 700;
         }
 
-        .error-list {
+        .error-list, .safe-list {
             list-style: none;
             padding: 0;
         }
 
-        .error-list li {
-            padding-left: 1.5rem;
+        .error-list li, .safe-list li {
+            padding-left: 2rem;
             position: relative;
-            margin-bottom: 1rem;
-            color: #fca5a5;
+            margin-bottom: 1.25rem;
+            font-weight: 500;
         }
 
         .error-list li::before {
@@ -154,18 +162,7 @@
             position: absolute;
             left: 0;
             color: var(--accent);
-        }
-
-        .safe-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .safe-list li {
-            padding-left: 1.5rem;
-            position: relative;
-            margin-bottom: 1rem;
-            color: #86efac;
+            font-weight: 900;
         }
 
         .safe-list li::before {
@@ -173,31 +170,38 @@
             position: absolute;
             left: 0;
             color: #22c55e;
+            font-weight: 900;
         }
+
+        .error-list li { color: #fca5a5; }
+        .safe-list li { color: #86efac; }
 
         button {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
+            padding: 1.25rem 2.5rem;
+            border-radius: 12px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
         }
 
-        button:active {
-            transform: scale(0.98);
-        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
 
         .back-btn {
             background: transparent;
             border: 1px solid var(--border);
-            margin-top: 2rem;
+            margin-top: 3rem;
             width: 100%;
+            box-shadow: none;
         }
+        
+        .back-btn:hover { background: rgba(255,255,255,0.05); }
     </style>
+
 </head>
 
 <body>

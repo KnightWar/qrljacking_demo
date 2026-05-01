@@ -1,228 +1,303 @@
 :root {
     --bg-dark: #020617;
     --card-bg: #0f172a;
+    --primary: #3b82f6;
+    --primary-glow: rgba(59, 130, 246, 0.5);
     --hacker-green: #22c55e;
     --hacker-red: #ef4444;
-    --hacker-blue: #3b82f6;
     --text-primary: #f8fafc;
-    --text-muted: #64748b;
+    --text-muted: #94a3b8;
     --border: #1e293b;
+    --glass: rgba(15, 23, 42, 0.7);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
 }
 
 body {
     background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(239, 68, 68, 0.05) 0%, transparent 50%);
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
 }
 
 header {
-    padding: 1rem;
+    padding: 1.25rem;
     text-align: center;
     border-bottom: 1px solid var(--border);
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(10px);
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    z-index: 10;
 }
 
 header h1 {
-    font-size: 1.2rem;
-    letter-spacing: 1px;
-    color: var(--hacker-blue);
-}
-
-.dashboard {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    flex: 1;
-}
-
-@media (max-width: 900px) {
-    .dashboard {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Victim View Area (The part the Attacker shows the Victim) */
-.victim-view {
-    padding: 1.5rem;
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
-}
-
-.victim-label {
-    background: var(--hacker-red);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    margin-bottom: 1rem;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: var(--primary);
+    font-weight: 800;
     text-transform: uppercase;
 }
 
-.phishing-card {
-    background: white;
-    color: black;
-    padding: 1.5rem;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 320px;
-    text-align: center;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-}
-
-.phishing-card h2 {
-    font-size: 1.2rem;
-    color: #1e293b;
-    margin-bottom: 0.5rem;
-}
-
-.qr-code {
-    width: 200px;
-    height: 200px;
-    margin: 1rem auto;
-    border: 1px solid #e2e8f0;
-    padding: 8px;
-    position: relative;
-    background: white;
-}
-
-.qr-code img {
-    width: 100%;
-    height: 100%;
-}
-
-.scan-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: rgba(59, 130, 246, 0.5);
-    animation: scan 2s infinite linear;
-}
-
-@keyframes scan {
-    0% { top: 0; }
-    100% { top: 100%; }
-}
-
-/* Hacker View Area */
-.hacker-view {
-    padding: 1.5rem;
-    background: #000;
+.main-container {
     display: flex;
     flex-direction: column;
-}
-
-.hacker-label {
-    background: var(--hacker-green);
-    color: black;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    margin-bottom: 1rem;
-    width: fit-content;
-    font-weight: bold;
-}
-
-.terminal {
-    background: #050505;
-    border: 1px solid #22c55e22;
-    border-radius: 8px;
-    padding: 0.75rem;
+    align-items: center;
+    justify-content: center;
     flex: 1;
+    padding: 2rem;
+    position: relative;
+}
+
+/* The Phishing Page (Victim's View) */
+.phishing-portal {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.phishing-portal::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, var(--primary), transparent 30%);
+    animation: rotate-border 4s linear infinite;
+    opacity: 0.1;
+    z-index: -1;
+}
+
+@keyframes rotate-border {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.portal-badge {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--primary);
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.phishing-portal h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.phishing-portal p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+}
+
+.qr-wrapper {
+    background: white;
+    padding: 16px;
+    border-radius: 20px;
+    display: inline-block;
+    position: relative;
+    box-shadow: 0 0 30px var(--primary-glow);
+    margin-bottom: 1.5rem;
+}
+
+.qr-wrapper img {
+    display: block;
+    width: 200px;
+    height: 200px;
+}
+
+.scan-line {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    height: 3px;
+    background: linear-gradient(to right, transparent, var(--primary), transparent);
+    box-shadow: 0 0 15px var(--primary);
+    animation: scan-move 2.5s ease-in-out infinite;
+    z-index: 2;
+}
+
+@keyframes scan-move {
+    0%, 100% { top: 16px; opacity: 0; }
+    10%, 90% { opacity: 1; }
+    50% { top: calc(100% - 19px); }
+}
+
+.portal-footer {
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+    padding-top: 1.5rem;
     font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Hacker Dashboard (Secret/Toggleable) */
+.hacker-panel {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 320px;
+    background: #000;
+    border: 1px solid #22c55e44;
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    z-index: 100;
+    transform: translateY(calc(100% + 1rem));
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hacker-panel.visible {
+    transform: translateY(0);
+}
+
+.hacker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #22c55e22;
+}
+
+.hacker-header h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--hacker-green);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.terminal-mini {
+    background: #050505;
+    height: 120px;
+    border-radius: 8px;
+    padding: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
     color: var(--hacker-green);
     overflow-y: auto;
     margin-bottom: 1rem;
-    max-height: 200px;
 }
 
-.terminal p { margin-bottom: 0.3rem; }
-.timestamp { color: #475569; margin-right: 6px; }
+.terminal-mini p { margin-bottom: 4px; }
+.terminal-mini .ts { color: #475569; }
 
-.access-card {
-    background: #0a0a0a;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem;
+.status-row {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    opacity: 0.4;
-    transition: all 0.5s ease;
+    gap: 12px;
+    background: #0a0a0a;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #1e293b;
 }
 
-.access-card.granted {
-    border-color: var(--hacker-green);
-    opacity: 1;
-    background: #064e3b22;
-}
-
-.avatar {
-    width: 44px;
-    height: 44px;
-    background: #111;
+.status-indicator {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
+    background: #475569;
+}
+
+.status-indicator.active {
+    background: var(--hacker-green);
+    box-shadow: 0 0 10px var(--hacker-green);
+}
+
+.status-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* Floating Toggle Button */
+.dashboard-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--primary);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    z-index: 101;
+    transition: transform 0.3s;
 }
 
-.status-granted {
-    color: var(--hacker-green);
-    font-size: 0.8rem;
-    font-weight: bold;
-    display: none;
-}
+.dashboard-toggle:hover { transform: scale(1.1); }
 
-.status-granted.show { display: block; }
-
-/* Control Button */
-.controls {
-    padding: 1rem;
-    background: #0f172a;
-    text-align: center;
-    border-top: 1px solid var(--border);
-}
-
-button.hack-btn {
-    background: var(--hacker-blue);
-    color: white;
-    border: none;
-    padding: 0.8rem 2rem;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-    max-width: 400px;
-}
-
-/* Hacked Overlay */
-.hacked-overlay {
+/* Overlays */
+.hacked-alert {
     position: fixed;
     inset: 0;
-    background: rgba(239, 68, 68, 0.98);
-    display: flex;
+    background: rgba(239, 68, 68, 0.95);
+    backdrop-filter: blur(10px);
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
-    display: none;
+    z-index: 2000;
     text-align: center;
-    padding: 20px;
 }
 
-.hacked-overlay.active { display: flex; }
-.hacked-overlay h1 { font-size: 2.5rem; color: white; margin-bottom: 1rem; }
+.hacked-alert.active { display: flex; }
+
+.hacked-alert h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+
+.simulate-btn {
+    margin-top: 2rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.simulate-btn:hover { background: #2563eb; transform: translateY(-2px); }
+
