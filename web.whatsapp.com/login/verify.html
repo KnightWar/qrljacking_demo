@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRLJacking: Security Awareness</title>
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --card-bg: #0f172a;
+            --primary: #3b82f6;
+            --accent: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+            --glass: rgba(15, 23, 42, 0.7);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(239, 68, 68, 0.05) 0%, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Initial Loading State */
+        .view-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            margin-bottom: 24px;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Hacked Message */
+        .hacked-msg {
+            display: none;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .hacked-msg h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Safety Dashboard */
+        #safety-dashboard {
+            display: none;
+            padding: 4rem 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .header-section h2 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .stat-num {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .info-section {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .info-section h3 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            font-weight: 700;
+        }
+
+        .error-list,
+        .safe-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .error-list li,
+        .safe-list li {
+            padding-left: 2rem;
+            position: relative;
+            margin-bottom: 1.25rem;
+            font-weight: 500;
+        }
+
+        .error-list li::before {
+            content: "✕";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 900;
+        }
+
+        .safe-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+            font-weight: 900;
+        }
+
+        .error-list li {
+            color: #fca5a5;
+        }
+
+        .safe-list li {
+            color: #86efac;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1.25rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            margin-top: 3rem;
+            width: 100%;
+            box-shadow: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Table Styling */
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .metrics-table th,
+        .metrics-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .metrics-table th {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .metrics-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .highlight-text {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .danger-text {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .checklist-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 12px 12px 0;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+    <!-- Step 1: Loading/Verification -->
+    <div id="view-loading" class="view-container">
+        <div class="spinner"></div>
+        <p>Verifying secure session...</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Syncing with dashboard...</p>
+    </div>
+
+    <!-- Step 2: The "Hacked" Warning -->
+    <div id="view-hacked" class="view-container" style="display: none;">
+        <div class="hacked-msg">
+            <h1>⚠️ HACKED</h1>
+            <p style="font-size: 1.2rem;">Session Relay Successful. Access Hijacked.</p>
+            <p style="color: var(--text-muted); margin-bottom: 2.5rem;">
+                SoCSE has successfully mirrored and hacked your authentication token.<br>
+                This happened because you scanned an untrusted QR code.
+            </p>
+            <button onclick="showDashboard()">Learn How to Stay Safe</button>
+        </div>
+    </div>
+
+    <!-- Step 3: Educational Dashboard -->
+    <div id="safety-dashboard">
+        <div class="header-section">
+            <h2>Cyber Awareness Guide</h2>
+            <p style="color: var(--text-muted);">Protecting yourself against QRLJacking and Quishing.</p>
+        </div>
+
+        <!-- NEW: Real-time Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-num">400%</span>
+                <span class="stat-label">Surge in QR Phishing (2023-25)</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">22%</span>
+                <span class="stat-label">Of All Phishing uses QR Codes</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">2.7M</span>
+                <span class="stat-label">Daily Malicious QR Emails</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num">21s</span>
+                <span class="stat-label">Avg. Time-to-Click Payload</span>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>1. What is QRLJacking?</h3>
+            <p>
+                <strong>Quick Response Code Login Jacking</strong> is a social engineering attack that hijacks accounts
+                that use the "Login with QR code" feature.
+            </p>
+            <ul class="safe-list">
+                <li><span class="highlight-text">The Hook:</span> It leverages the convenience of scanning a QR code to
+                    log into services (like WhatsApp, Discord, or Banking apps) on a desktop browser.</li>
+                <li><span class="danger-text">The Goal:</span> The attacker hijacks your active session, gaining full
+                    control of your account without needing your username or password.</li>
+            </ul>
+        </div>
+
+        <div class="info-section">
+            <h3>2. How the Attack Works (Anatomy of a Scam)</h3>
+            <div class="checklist-item"><strong>Attacker Sets Up:</strong> The attacker opens a legitimate service
+                (e.g., WhatsApp Web) and gets a valid login QR code.</div>
+            <div class="checklist-item"><strong>Attacker Clones:</strong> The attacker captures this QR code and
+                immediately displays it on a fake, malicious website.</div>
+            <div class="checklist-item"><strong>The Bait:</strong> The attacker sends you a phishing link (via email,
+                SMS, or a "free offer" ad) telling you to scan the code.</div>
+            <div class="checklist-item"><strong>The Scam:</strong> You scan the QR code from the malicious site with
+                your mobile app.</div>
+            <div class="checklist-item"><strong>The Hijack:</strong> Your app tells the website to "log in," but you are
+                logging in the attacker.</div>
+            <p style="font-size: 0.85rem; margin-top: 1rem; color: var(--text-muted);"><em>Key takeaway: You are
+                    scanning a legitimate code that belongs to an attacker's session.</em></p>
+        </div>
+
+        <div class="info-section">
+            <h3>3. Real-Life Examples & Risks</h3>
+            <ul class="error-list">
+                <li><strong>Messaging Hijack:</strong> Attackers take over WhatsApp or Discord to spread malware or scam
+                    contacts.</li>
+                <li><strong>Banking/Ecommerce Theft:</strong> Accessing banking apps (like Alipay) to authorize
+                    fraudulent transactions.</li>
+                <li><strong>Data Exposure:</strong> Attackers can see your contacts, personal messages, and even your
+                    GPS location.</li>
+            </ul>
+        </div>
+
+        <div class="info-section">
+            <h3>4. How to Defend Yourself</h3>
+            <ul class="safe-list">
+                <li><strong>Treat QR Codes Like Links:</strong> Do not scan QR codes from unknown or untrusted sources.
+                </li>
+                <li><strong>Verify the Source:</strong> Only scan QR codes on official websites, especially when logging
+                    in.</li>
+                <li><strong>Check the URL:</strong> Before scanning, make sure the URL in your browser is the real,
+                    official site (e.g., whatsapp.com).</li>
+                <li><strong>Check Logged-In Sessions:</strong> Regularly check "Linked Devices" in your app settings.
+                </li>
+                <li><strong>Enable MFA:</strong> Use Multi-Factor Authentication whenever possible.</li>
+            </ul>
+        </div>
+
+        <!-- NEW: Detailed Statistics & Vulnerability Section -->
+        <div class="info-section">
+            <h3>Why It Works: Evasion and Human Trust</h3>
+            <ul class="safe-list" style="color: var(--text-main);">
+                <li><strong class="highlight-text">Invisible to Filters:</strong> 70% of QR code attacks now use PDF
+                    attachments to bypass traditional security filters.</li>
+                <li><strong class="highlight-text">User Susceptibility:</strong> 73% of users admit to scanning QR codes
+                    without verifying the destination first. e.g If you in Sikkim but location is showing Delhi, Kolkota
+                    etc. then it is a suspicious activity.</li>
+                <li><strong class="highlight-text">Speed of Attack:</strong> Median time-to-ransom has dropped to under
+                    20 hours.</li>
+                <li><strong class="highlight-text">Impersonation:</strong> 56% of quishing emails impersonate Microsoft
+                    2FA reset prompts.</li>
+            </ul>
+        </div>
+
+        <div class="info-section">
+            <h3>Attack Metrics & Research</h3>
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Attack Metric</th>
+                        <th>Statistic</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Increase (2023-2025)</td>
+                        <td class="danger-text">400%</td>
+                        <td>Abnormal Security</td>
+                    </tr>
+                    <tr>
+                        <td>Credential Theft Rate</td>
+                        <td class="danger-text">89.3%</td>
+                        <td>Venza</td>
+                    </tr>
+                    <tr>
+                        <td>Detection Gap</td>
+                        <td class="highlight-text">1 in 10</td>
+                        <td>Hoxhunt</td>
+                    </tr>
+                    <tr>
+                        <td>Total Phishing Vol. (2025)</td>
+                        <td class="highlight-text">3.8 Million</td>
+                        <td>APWG</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-section">
+            <h3>Summary Checklist for Employees</h3>
+            <div class="checklist-item">✅ Do I trust this email/person?</div>
+            <div class="checklist-item">✅ Is this the official website?</div>
+            <div class="checklist-item">✅ Did I check my "Linked Devices"?</div>
+            <div class="checklist-item">🚨 If a QR code looks suspicious, <strong>DON'T SCAN IT</strong>.</div>
+        </div>
+
+        <button class="back-btn" onclick="location.reload()">Restart Simulation</button>
+    </div>
+
+
+    <script>
+        // Simulation flow
+        setTimeout(() => {
+            document.getElementById('view-loading').style.display = 'none';
+            document.getElementById('view-hacked').style.display = 'flex';
+            document.querySelector('.hacked-msg').style.display = 'block';
+        }, 4000);
+
+        function showDashboard() {
+            document.getElementById('view-hacked').style.display = 'none';
+            document.getElementById('safety-dashboard').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+
+</html>
